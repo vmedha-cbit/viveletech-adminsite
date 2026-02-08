@@ -3,13 +3,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBIUcBRId6ZBjmRy1JiP8I1JO8YuYdxDd4",
-  authDomain: "vive-le-tech.firebaseapp.com",
-  projectId: "vive-le-tech",
-  storageBucket: "vive-le-tech.firebasestorage.app",
-  messagingSenderId: "1087488645780",
-  appId: "1:1087488645780:web:d9d0a12d126aecb785f281",
-  measurementId: "G-7JP6E896XX"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
