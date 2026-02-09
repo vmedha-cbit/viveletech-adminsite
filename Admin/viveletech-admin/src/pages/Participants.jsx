@@ -25,50 +25,48 @@ export default function Participants() {
   }, []);
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Participants</h1>
+          <p className="page-subtitle">Browse all registered attendees.</p>
+        </div>
+      </div>
 
-      <h2>All Participants</h2>
-
-      <hr />
-
-      <table border="1" cellPadding="5">
-
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>College</th>
-            <th>Registered</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-          {list.map((p, i) => (
-
-            <tr key={i}>
-
-              <td>
-                <Link to={`/profile/${p.email}`}>
-                  {p.email}
-                </Link>
-              </td>
-
-              <td>{p.college}</td>
-
-              <td>
-                {p.registeredAt?.toDate
-                  ? p.registeredAt.toDate().toLocaleString()
-                  : ""}
-              </td>
-
-            </tr>
-
-          ))}
-
-        </tbody>
-
-      </table>
-
+      <section className="card">
+        <div className="section-header">
+          <h3 className="section-title">All registrations</h3>
+          <span className="muted">{list.length} records</span>
+        </div>
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>College</th>
+                <th>Registered</th>
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((p, i) => (
+                <tr key={i} className="row-hover">
+                  <td>
+                    <Link className="link" to={`/profile/${p.email}`}>
+                      {p.email}
+                    </Link>
+                  </td>
+                  <td>{p.college}</td>
+                  <td>
+                    {p.registeredAt?.toDate
+                      ? p.registeredAt.toDate().toLocaleString()
+                      : ""}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }

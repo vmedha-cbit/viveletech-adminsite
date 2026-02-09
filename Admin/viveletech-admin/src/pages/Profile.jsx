@@ -50,37 +50,55 @@ export default function Profile() {
   }, [email]);
 
   return (
-    <div style={{ padding: 20 }}>
-
-      <h2>Participant Profile</h2>
-
-      <p>Email: {email}</p>
-
-      <hr />
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Participant Profile</h1>
+          <p className="page-subtitle">{email}</p>
+        </div>
+      </div>
 
       {list.length === 0 && (
-        <p>No registrations found.</p>
+        <div className="card">
+          <p className="muted">No registrations found.</p>
+        </div>
       )}
 
       {list.map((p, i) => (
+        <div key={i} className="card profile-card">
+          <div className="section-header">
+            <h3 className="section-title">{p.fullName}</h3>
+            <span className="status-pill">{p.paymentStatus || "Pending"}</span>
+          </div>
 
-        <div key={i}>
-
-          <h4>{p.fullName}</h4>
-
-          <p>Event: {p.event || "N/A"}</p>
-          <p>College: {p.college}</p>
-          <p>Branch: {p.branch}</p>
-          <p>Year: {p.year}</p>
-          <p>Phone: {p.phoneNumber}</p>
-          <p>Status: {p.paymentStatus}</p>
-
-          <hr />
-
+          <div className="profile-grid">
+            <div>
+              <p className="stat-label">Event</p>
+              <p className="profile-value">{p.event || "N/A"}</p>
+            </div>
+            <div>
+              <p className="stat-label">College</p>
+              <p className="profile-value">{p.college}</p>
+            </div>
+            <div>
+              <p className="stat-label">Branch</p>
+              <p className="profile-value">{p.branch}</p>
+            </div>
+            <div>
+              <p className="stat-label">Year</p>
+              <p className="profile-value">{p.year}</p>
+            </div>
+            <div>
+              <p className="stat-label">Phone</p>
+              <p className="profile-value">{p.phoneNumber}</p>
+            </div>
+            <div>
+              <p className="stat-label">Email</p>
+              <p className="profile-value">{p.email}</p>
+            </div>
+          </div>
         </div>
-
       ))}
-
     </div>
   );
 }

@@ -66,57 +66,83 @@ export default function EventPage() {
   }, [event]);
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Event Analytics</h1>
+          <p className="page-subtitle">Current view: {event}</p>
+        </div>
+      </div>
 
-      <h2>Event: {event}</h2>
+      <section className="split-grid">
+        <div className="card">
+          <div className="section-header">
+            <h3 className="section-title">Totals</h3>
+            <span className="muted">All registrations in this view</span>
+          </div>
+          <div className="stat-stack">
+            <div>
+              <p className="stat-label">Total</p>
+              <p className="stat-value">{stats.cbit + stats.noncbit}</p>
+            </div>
+            <div>
+              <p className="stat-label">CBIT</p>
+              <p className="stat-value">{stats.cbit}</p>
+            </div>
+            <div>
+              <p className="stat-label">Non-CBIT</p>
+              <p className="stat-value">{stats.noncbit}</p>
+            </div>
+          </div>
+        </div>
 
-      <hr />
+        <div className="card">
+          <div className="section-header">
+            <h3 className="section-title">Year-wise breakdown</h3>
+            <span className="muted">Participants by academic year</span>
+          </div>
+          <div className="chip-grid">
+            {Object.keys(stats.year).length === 0 && (
+              <p className="muted">No year data available.</p>
+            )}
+            {Object.keys(stats.year).map(y => (
+              <div key={y} className="chip">
+                <span>Year {y}</span>
+                <strong>{stats.year[y]}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      <h3>Analytics</h3>
-         <p>Total : {stats.cbit + stats.noncbit}</p>
-      <p>CBIT: {stats.cbit}</p>
-      <p>Non-CBIT: {stats.noncbit}</p>
-
-      <h4>Year-wise</h4>
-
-      {Object.keys(stats.year).map(y => (
-        <p key={y}>
-          Year {y}: {stats.year[y]}
-        </p>
-      ))}
-
-      <hr />
-
-      <h3>Participants</h3>
-
-      <table border="1" cellPadding="5">
-
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>College</th>
-            <th>Year</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-          {list.map((p, i) => (
-
-            <tr key={i}>
-              <td>{p.fullName}</td>
-              <td>{p.college}</td>
-              <td>{p.year}</td>
-              <td>{p.email}</td>
-            </tr>
-
-          ))}
-
-        </tbody>
-
-      </table>
-
+      <section className="card">
+        <div className="section-header">
+          <h3 className="section-title">Participants</h3>
+          <span className="muted">{list.length} records</span>
+        </div>
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>College</th>
+                <th>Year</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((p, i) => (
+                <tr key={i}>
+                  <td>{p.fullName}</td>
+                  <td>{p.college}</td>
+                  <td>{p.year}</td>
+                  <td>{p.email}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }
