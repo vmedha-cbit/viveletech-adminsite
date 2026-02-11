@@ -25,34 +25,7 @@ export default function Dashboard() {
 
   }, []);
 
-  useEffect(() => {
-
-    async function loadDaily() {
-      const snap = await getDocs(collection(db, "participants"));
-      const counts = {};
-
-      snap.forEach(d => {
-        const data = d.data();
-        const dateValue = data.registeredAt?.toDate
-          ? data.registeredAt.toDate()
-          : null;
-
-        if (!dateValue) return;
-
-        const key = dateValue.toISOString().slice(0, 10);
-        counts[key] = (counts[key] || 0) + 1;
-      });
-
-      const rows = Object.keys(counts)
-        .sort()
-        .map(date => ({ date, count: counts[date] }));
-
-      setDailyCounts(rows);
-    }
-
-    loadDaily();
-
-  }, []);
+ 
 
   const normalizeValue = (value) => {
     if (value && typeof value.toDate === "function") {

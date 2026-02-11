@@ -16,7 +16,42 @@ export default function EventPage() {
 
   useEffect(() => {
 
+    const cacheKey = `event-analytics:${event}`;
+    const cacheTtlMs = 5 * 60 * 1000;
+
+    const readCache = () => {
+      try {
+        const raw = localStorage.getItem(cacheKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") return null;
+        if (Date.now() - parsed.savedAt > cacheTtlMs) return null;
+        return parsed;
+      } catch {
+        return null;
+      }
+    };
+
+    const writeCache = (payload) => {
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify({
+          savedAt: Date.now(),
+          list: payload.list,
+          stats: payload.stats
+        }));
+      } catch {
+        // Ignore cache write errors.
+      }
+    };
+
     async function load() {
+
+      const cached = readCache();
+      if (cached) {
+        setList(cached.list || []);
+        setStats(cached.stats || { cbit: 0, noncbit: 0, year: {} });
+        return;
+      }
 
       let docs = [];
 
@@ -25,13 +60,11 @@ export default function EventPage() {
         const events = ["dsa-master", "cipherville", "ethitech-mania"];
 
         const snaps = await Promise.all(
-          events.map(e =>
-            getDocs(collection(db, e))
-          )
+          events.map(e => getDocs(collection(db, e)))
         );
 
-        snaps.forEach(s => {
-          s.forEach(d => docs.push(d.data()));
+        snaps.forEach(snap => {
+          snap.forEach(d => docs.push(d.data()));
         });
 
       } else {
@@ -56,8 +89,10 @@ export default function EventPage() {
         year[d.year] = (year[d.year] || 0) + 1;
       });
 
+      const nextStats = { cbit, noncbit, year };
       setList(docs);
-      setStats({ cbit, noncbit, year });
+      setStats(nextStats);
+      writeCache({ list: docs, stats: nextStats });
 
     }
 

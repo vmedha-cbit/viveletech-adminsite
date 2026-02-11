@@ -7,22 +7,67 @@ export default function Participants() {
 
   const [list, setList] = useState([]);
 
+  
   useEffect(() => {
+    const cacheKey = "participants:list";
+    const cacheTtlMs = 5 * 60 * 1000;
+
+    const readCache = () => {
+      try {
+        const raw = localStorage.getItem(cacheKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") return null;
+        if (Date.now() - parsed.savedAt > cacheTtlMs) return null;
+        return parsed.list || null;
+      } catch {
+        return null;
+      }
+    };
+
+    const writeCache = (items) => {
+      try {
+        const normalized = items.map(row => {
+          const next = { ...row };
+          if (next.registeredAt && typeof next.registeredAt.toDate === "function") {
+            next.registeredAt = next.registeredAt.toDate().toISOString();
+          }
+          return next;
+        });
+        localStorage.setItem(cacheKey, JSON.stringify({
+          savedAt: Date.now(),
+          list: normalized
+        }));
+      } catch {
+        // Ignore cache write errors.
+      }
+    };
 
     async function load() {
+      const cached = readCache();
+      if (cached) {
+        setList(cached);
+        return;
+      }
 
-      const snap = await getDocs(
-        collection(db, "participants")
-      );
-
-      setList(
-        snap.docs.map(d => d.data())
-      );
+      const snap = await getDocs(collection(db, "participants"));
+      const items = snap.docs.map(d => d.data());
+      setList(items);
+      writeCache(items);
     }
 
     load();
-
   }, []);
+
+  const formatRegisteredAt = (value) => {
+    if (!value) return "";
+    if (typeof value?.toDate === "function") return value.toDate().toLocaleString();
+    if (typeof value === "string") {
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.getTime()) ? "" : parsed.toLocaleString();
+    }
+    return "";
+  };
 
   return (
     <div className="page">
@@ -57,9 +102,7 @@ export default function Participants() {
                   </td>
                   <td>{p.college}</td>
                   <td>
-                    {p.registeredAt?.toDate
-                      ? p.registeredAt.toDate().toLocaleString()
-                      : ""}
+                    {formatRegisteredAt(p.registeredAt)}
                   </td>
                 </tr>
               ))}

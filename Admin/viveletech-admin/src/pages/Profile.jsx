@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { useEffect, useState } from "react";
-
+import { query, where } from "firebase/firestore";
 export default function Profile() {
 
   const { email } = useParams();
@@ -11,43 +11,37 @@ export default function Profile() {
 
   useEffect(() => {
 
-    async function load() {
+  async function load() {
 
-      const events = [
-        "dsa-master",
-        "cipherville",
-        "ethitech-mania"
-      ];
+    const events = [
+      "dsa-master",
+      "cipherville",
+      "ethitech-mania"
+    ];
 
-      const snaps = await Promise.all(
-        events.map(e =>
-          getDocs(collection(db, e))
+    const snaps = await Promise.all(
+      events.map(e =>
+        getDocs(
+          query(
+            collection(db, e),
+            where("email", "==", email)
+          )
         )
-      );
+      )
+    );
 
-      let result = [];
+    let result = [];
 
-      snaps.forEach(s => {
+    snaps.forEach(s => {
+      s.forEach(d => result.push(d.data()));
+    });
 
-        s.forEach(d => {
+    setList(result);
+  }
 
-          const data = d.data();
+  load();
 
-          if (data.email === email) {
-            result.push(data);
-          }
-
-        });
-
-      });
-
-      setList(result);
-
-    }
-
-    load();
-
-  }, [email]);
+}, [email]);
 
   return (
     <div className="page">
